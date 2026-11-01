@@ -4,6 +4,10 @@ Cloudflare Worker에서 이미지를 미리 보고 Cloud Vision OCR을 실행하
 
 배포 주소: https://api-for-anythingllm-check.sskim4912.workers.dev
 
+## 다른 프로젝트의 토대로 복제하기
+
+**처음 배포하기 전에 [복제 설정 안내](SETUP.md)를 확인하세요.** 변경할 값·현재 값·입력 위치를 표로 정리했습니다. 특히 Worker `name`을 바꾸고 새 Worker에 `GCP_SERVICE_ACCOUNT_JSON` Secret을 따로 등록해야 합니다. 배포 후 `/setup` 페이지에서도 설정 안내를 볼 수 있습니다.
+
 ## 개발 및 배포
 
 Node.js 24에서 실행합니다.

@@ -4,7 +4,7 @@ export const page=String.raw`<!doctype html><html lang="ko"><head><meta charset=
 <section><label for="file"><strong>이미지 선택</strong> · PNG, JPG, WEBP, GIF / 최대 8MB</label><br><input id="file" type="file" accept="image/png,image/jpeg,image/webp,image/gif"><div><button id="ocr" disabled>OCR 실행</button><button id="save" disabled>버킷에 이미지 저장</button></div><p id="message" role="status" aria-live="polite"></p><div id="saved"></div></section>
 <div class="layout"><section><h2>이미지 뷰어</h2><div class="toolbar"><button class="secondary" id="minus" aria-label="축소">−</button><span id="zoom">100%</span><button class="secondary" id="plus" aria-label="확대">+</button><button class="secondary" id="fit">맞춤</button><button class="secondary" id="rotate">회전</button><button class="secondary" id="full">전체 화면</button></div><div id="viewport"><p id="placeholder">이미지를 선택해 주세요.</p><img id="image" alt="업로드 이미지 미리보기"></div><p id="meta"></p></section>
 <section><h2>OCR 결과</h2><textarea id="text" readonly placeholder="OCR을 실행하면 인식된 텍스트가 여기에 표시됩니다."></textarea><button id="copy" class="secondary">텍스트 복사</button></section></div>
-<section><h2>API 연결 확인</h2><p id="project"></p><div id="checks"></div><p>OCR·Vertex AI 호출과 Storage 사용량에 따라 GCP 요금이 발생할 수 있습니다.</p></section></main>
+<section><h2>API 연결 확인</h2><p id="project"></p><div id="checks"></div><p>OCR·Vertex AI 호출과 Storage 사용량에 따라 GCP 요금이 발생할 수 있습니다.</p></section><p><a href="/setup">다른 프로젝트로 복제할 때 · 설정 안내</a></p></main>
 <script>
 const $=id=>document.getElementById(id);let selected=null,localUrl=null,scale=1,angle=0,busy=false,selection=0;
 function transform(){$('image').style.transform='scale('+scale+') rotate('+angle+'deg)';$('zoom').textContent=Math.round(scale*100)+'%'}

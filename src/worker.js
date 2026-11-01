@@ -1,3 +1,4 @@
+import {setupPage} from './setup.js';
 import {check} from './checks.js';
 import {page} from './page.js';
 import {readImage,recognize,saveImage,viewImage} from './images.js';
@@ -24,6 +25,7 @@ export default {
       }catch(error){return Response.json({ok:false,message:error.name==='TimeoutError'?'외부 API 응답 시간 초과':error.message,durationMs:Date.now()-start},{status:502,headers});}
     }
     if(request.method!=='GET')return new Response('Method not allowed',{status:405,headers:{...headers,Allow:'GET, POST'}});
+    if(path==='/setup')return new Response(setupPage(env),{headers:{...headers,'Content-Type':'text/html; charset=utf-8'}});
     if(path==='/api/status')return Response.json(status(env),{headers});
     if(path==='/api/image')try{return await viewImage(request,env);}catch{return new Response('이미지 불러오기 실패',{status:502,headers});}
     if(path==='/')return new Response(page,{headers:{...headers,'Content-Type':'text/html; charset=utf-8'}});
