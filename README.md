@@ -1,6 +1,6 @@
 # GCP 이미지 작업실
 
-Cloudflare Worker에서 이미지를 미리 보고 Cloud Vision OCR을 실행하거나 GCP Cloud Storage 버킷에 저장합니다. 저장한 이미지는 Worker의 이미지 뷰어로 다시 열 수 있습니다. 이미지 확대·축소·회전·전체 화면과 OCR 텍스트 복사를 지원합니다.
+Cloudflare Worker에서 이미지를 미리 보고 Cloud Vision OCR을 실행하거나 GCP Cloud Storage 버킷에 저장합니다. 저장한 이미지는 **저장된 이미지 보기** 버튼으로 목록과 미리보기를 조회하고, Worker의 이미지 뷰어로 다시 열 수 있습니다. 이미지 확대·축소·회전·전체 화면과 OCR 텍스트 복사를 지원합니다. OCR 완료 후 Vertex AI가 원문에서 중요한 특징을 최대 5개 추출하고 각 항목에 OCR 근거를 함께 표시합니다. 특징 분석이 실패해도 OCR 원문은 유지되며 다시 분석할 수 있습니다.
 
 배포 주소: https://api-for-anythingllm-check.sskim4912.workers.dev
 
@@ -15,6 +15,7 @@ Node.js 24에서 실행합니다.
 ```sh
 npm ci
 npm run dev
+npm test
 npm run build
 npm run deploy
 ```
@@ -29,7 +30,9 @@ GCP 프로젝트·버킷·Vertex 모델·리전은 `wrangler.jsonc`에 설정합
 
 - `GET /api/status`: 설정 조회
 - `POST /api/ocr`: multipart 필드 `image`의 이미지 OCR
+- `POST /api/features`: JSON `{ "text": "OCR 원문" }`으로 중요한 특징 추출 (1~30,000자)
 - `POST /api/upload`: multipart 필드 `image`를 기존 GCP 버킷의 `uploads/UUID.ext`에 저장
+- `GET /api/images`: 저장 이미지 목록 (24개씩, `pageToken`으로 다음 페이지)
 - `GET /api/image?object=uploads/UUID.ext`: 저장된 이미지를 스트리밍
 - `POST /api/check/vertex`, `/api/check/ocr`, `/api/check/storage`: 연결 진단
 
@@ -40,3 +43,5 @@ PNG·JPEG·WEBP·GIF, 최대 8MB를 지원합니다. OCR과 이미지 저장은 
 ## 검증
 
 배포된 Worker에서 Vertex AI의 `OK` 응답, 테스트 이미지의 `HELLO 123` OCR, GCP 버킷 JSON 저장·읽기·삭제, 이미지 업로드 후 바이트 단위 재조회 일치를 확인했습니다. 로컬에서 이미지 형식·크기·경로 검증과 브라우저 스크립트 구문도 검사했습니다.
+
+특징 분석은 OCR 텍스트만 사용하며 이미지 외형을 추정하지 않습니다. 원문에서 확인할 수 없는 인용 근거는 오류로 처리합니다. OCR 인식 오류나 AI 해석 오류가 있을 수 있으므로 표시된 원문 근거를 함께 확인하세요.

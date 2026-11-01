@@ -35,3 +35,11 @@ export async function viewImage(request,env) {
   const type={png:'image/png',jpg:'image/jpeg',webp:'image/webp',gif:'image/gif'}[key.split('.').pop()];
   return new Response(response.body,{headers:{'Content-Type':type,'X-Content-Type-Options':'nosniff','Cache-Control':'no-store'}});
 }
+export async function listImages(request,env){
+  const pageToken=new URL(request.url).searchParams.get('pageToken');
+  if(pageToken && pageToken.length>2048)throw new Error('잘못된 페이지 요청입니다.');
+  const params=new URLSearchParams({prefix:'uploads/',maxResults:'24',fields:'items(name,size,updated,contentType),nextPageToken'});
+  if(pageToken)params.set('pageToken',pageToken);
+  const data=await google(`https://storage.googleapis.com/storage/v1/b/${encodeURIComponent(env.GCS_BUCKET)}/o?${params}`,await accessToken(env));
+  return {bucket:env.GCS_BUCKET,images:(data.items||[]).filter(item=>/^uploads\/[0-9a-f-]{36}\.(png|jpg|webp|gif)$/.test(item.name)).map(item=>({object:item.name,size:Number(item.size)||0,updated:item.updated,url:'/api/image?object='+encodeURIComponent(item.name)})),nextPageToken:data.nextPageToken||null};
+}
