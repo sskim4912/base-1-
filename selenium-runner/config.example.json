@@ -1,0 +1,13 @@
+{
+  "targetUrl": "https://api-for-anythingllm-check.sskim4912.workers.dev/selenium-demo",
+  "readySelector": "#voucher-form",
+  "fields": {
+    "vendor": "#vendor",
+    "date": "#date",
+    "description": "#description",
+    "supplyAmount": "#supplyAmount",
+    "taxAmount": "#taxAmount",
+    "totalAmount": "#totalAmount"
+  },
+  "timeoutMs": 15000
+}

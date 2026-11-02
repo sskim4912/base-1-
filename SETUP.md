@@ -68,3 +68,7 @@ GitHub 저장소를 연결하는 자동 배포도 새 Worker에 별도로 설정
 ## 로컬 개발
 
 `.dev.vars.example`을 `.dev.vars`로 복사하고 로컬에서 사용할 서비스 계정 JSON을 직접 입력한 뒤 `npm run dev`를 실행합니다. 실제 GCP API·버킷을 호출하므로 로컬 실행도 리소스를 사용합니다. `.dev.vars`는 Git에서 제외됩니다. Cloudflare에 등록한 Secret은 GitHub나 로컬로 자동 복사되지 않습니다.
+
+## Selenium 연결을 사용하는 경우
+
+별도 실행 서비스의 `selenium-runner/config.local.json`에서 `targetUrl`, `readySelector`, `fields`를 새 관리자 화면에 맞춥니다. Worker 변수 `SELENIUM_RUNNER_URL`과 Secret `SELENIUM_RUNNER_TOKEN`도 새 실행 서비스에 맞게 별도 등록합니다. 서비스 계정 JSON과 Selenium 서버 토큰은 서로 다른 용도입니다. [실행 서비스 안내](selenium-runner/README.md)를 참고하세요. 미설정 상태에서는 기존 OCR·저장·분석 기능만 사용할 수 있습니다.

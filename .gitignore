@@ -8,3 +8,5 @@ node_modules/
 !.env.example
 coverage/
 dist/
+selenium-runner/config.local.json
+selenium-runner/profile/

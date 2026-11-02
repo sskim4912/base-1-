@@ -1,3 +1,5 @@
+import {seleniumRequest,validateVoucher,demoPage} from './selenium.js';
+import {extractVoucher} from './voucher.js';
 import {extractFeatures,MAX_OCR_TEXT} from './features.js';
 import {setupPage} from './setup.js';
 import {check} from './checks.js';
@@ -14,11 +16,14 @@ export default {
       const start=Date.now();
       try{
         let result;
-        if(path==='/api/features'){
+        if(path==='/api/selenium/fill'){
+          let fields;try{fields=validateVoucher((await request.json()).fields);}catch(error){return Response.json({ok:false,message:error.message},{status:400,headers});}
+          result=await seleniumRequest(env,'/fill',fields);
+        }else if(path==='/api/features'||path==='/api/voucher'){
           if(Number(request.headers.get('Content-Length'))>MAX_OCR_TEXT*6+1024)return Response.json({ok:false,message:'분석 요청이 너무 큽니다.'},{status:413,headers});
           let body;try{const raw=await request.text();if(raw.length>MAX_OCR_TEXT*6+1024)throw new Error();body=JSON.parse(raw);}catch{return Response.json({ok:false,message:'올바른 JSON 요청이 필요합니다.'},{status:400,headers});}
           if(typeof body?.text!=='string'||!body.text.trim()||body.text.length>MAX_OCR_TEXT)return Response.json({ok:false,message:'OCR 텍스트를 1~30,000자로 입력하세요.'},{status:400,headers});
-          result=await extractFeatures(body.text,env);
+          result=path==='/api/features'?await extractFeatures(body.text,env):await extractVoucher(body.text,env);
         }else if(path==='/api/ocr'||path==='/api/upload'){
           let image;try{image=await readImage(request);}catch(error){return Response.json({ok:false,message:error.message},{status:400,headers});}
           result=path==='/api/ocr'?await recognize(image,env):await saveImage(image,env);
@@ -31,6 +36,8 @@ export default {
       }catch(error){return Response.json({ok:false,message:error.name==='TimeoutError'?'외부 API 응답 시간 초과':error.message,durationMs:Date.now()-start},{status:502,headers});}
     }
     if(request.method!=='GET')return new Response('Method not allowed',{status:405,headers:{...headers,Allow:'GET, POST'}});
+    if(path==='/selenium-demo')return new Response(demoPage,{headers:{...headers,'Content-Type':'text/html; charset=utf-8'}});
+    if(path==='/api/selenium/status'){if(!env.SELENIUM_RUNNER_URL||!env.SELENIUM_RUNNER_TOKEN)return Response.json({ok:true,connected:false,message:'Selenium 실행 서버 미연결 · 전표 캡처 확인 후 설정 예정'},{headers});try{return Response.json({ok:true,...await seleniumRequest(env,'/health')},{headers});}catch(error){return Response.json({ok:false,connected:false,message:error.message},{status:502,headers});}}
     if(path==='/setup')return new Response(setupPage(env),{headers:{...headers,'Content-Type':'text/html; charset=utf-8'}});
     if(path==='/api/status')return Response.json(status(env),{headers});
     if(path==='/api/images')try{return Response.json({ok:true,...await listImages(request,env)},{headers});}catch(error){return Response.json({ok:false,message:error.message},{status:502,headers});}

@@ -26,8 +26,15 @@ Cloudflare Worker의 Secret `GCP_SERVICE_ACCOUNT_JSON`에 서비스 계정 JSON 
 
 GCP 프로젝트·버킷·Vertex 모델·리전은 `wrangler.jsonc`에 설정합니다. 서비스 계정에는 Vertex AI 호출, Cloud Vision OCR 호출, 해당 버킷 객체 생성·조회·삭제 권한이 필요합니다. 관련 GCP API도 활성화되어 있어야 합니다.
 
+## Selenium 전표 입력
+
+OCR에서 거래처·날짜·적요·공급가액·세액·합계를 추출하고 수정한 뒤 별도 Selenium 실행 서비스에 전달하는 화면을 제공합니다. 최종 저장은 실행하지 않습니다. 실제 관리자 화면 연결은 대상 주소·입력칸 셀렉터·로그인 연동을 설정해야 합니다. [설치와 연결 안내](selenium-runner/README.md)를 확인하세요. `/selenium-demo`는 자동 입력 검증용 전표 화면입니다.
+
 ## API
 
+- `GET /api/selenium/status`: Selenium 실행 서비스 연결 확인
+- `POST /api/voucher`: OCR 텍스트에서 전표 입력값 추출
+- `POST /api/selenium/fill`: 설정된 Selenium 실행 서비스로 전표 입력값 전달
 - `GET /api/status`: 설정 조회
 - `POST /api/ocr`: multipart 필드 `image`의 이미지 OCR
 - `POST /api/features`: JSON `{ "text": "OCR 원문" }`으로 중요한 특징 추출 (1~30,000자)
